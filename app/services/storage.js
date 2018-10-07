@@ -25,7 +25,11 @@ export const get = (collection, where = [], order = ['created_at', 'desc']) => {
   return query.get().then((querySnapshot) => {
     let results = [];
     querySnapshot.forEach((doc) => {
-      results = results.concat([doc.data()])
+      const data = doc.data() || {};
+      results = results.concat([{
+        ...data,
+        id: doc.id,
+      }])
     });
 
     return results;
@@ -46,3 +50,10 @@ export const add = (collection, item) => {
     return true;
   });
 }
+
+export const getFormattedDate = (timestamp) => {
+  const date = timestamp.toDate();
+  const time = date.toTimeString().substring(0, 5);
+
+  return `${date.toDateString()} ${time}`;
+};

@@ -2,6 +2,7 @@ import React from 'react';
 import { StyleSheet, Text, Button, View } from 'react-native';
 
 import EventList from '../components/EventList';
+import EventListItem from '../components/EventListItem';
 import * as storage from '../services/storage';
 
 
@@ -9,13 +10,12 @@ const aggregateEvents = (events) => {
   const aggregated = {};
 
   events.forEach((event) => {
-    const key = event.what.toLowerCase();
+    const key = event.key;
     const existing = aggregated[key] || { recent: event, amount: 0 };
 
     aggregated[key] = {
       ...existing,
       ...event,
-      key: key,
       amount: existing.amount + event.amount,
     };
   });
@@ -63,9 +63,11 @@ class LandingScreen extends React.Component {
     return (
       <View style={styles.container}>
         <EventList
-          onPressItem={this.handlePressItem}
           events={events}
           isLoading={isLoading}
+          renderItem={({ item }) => (
+            <EventListItem item={item.event} onPress={this.handlePressItem} />
+          )}
         />
         <Button title="Add" onPress={this.handlePressTrack}>
         </Button>

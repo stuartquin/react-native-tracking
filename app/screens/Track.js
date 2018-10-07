@@ -1,6 +1,8 @@
 import React from 'react';
 import { StyleSheet, Button, Text, TextInput, View } from 'react-native';
 
+import EventList from '../components/EventList';
+import DateListItem from '../components/DateListItem';
 import * as storage from '../services/storage';
 
 class TrackScreen extends React.Component {
@@ -12,6 +14,8 @@ class TrackScreen extends React.Component {
     super(props);
 
     this.state = {
+      events: [],
+      isLoading: true,
       item: {
         what: '',
         unit: '',
@@ -38,21 +42,33 @@ class TrackScreen extends React.Component {
 
   handleTrack() {
     this.props.navigation.navigate('Landing');
-    storage.add('events', this.state.item);
+    const item = {
+      ...this.state.item,
+      key: this.state.item.what.toLowerCase()
+    };
+    storage.add('events', item);
   }
 
   handleReceiveFocus () {
     const { navigation } = this.props;
+    const key = navigation.getParam('key', null);
+
     this.setState({
       item: {
         what: navigation.getParam('what', null),
         unit: navigation.getParam('unit', null),
       }
     });
+
+    if (key) {
+      storage.get('events', ['key', '==', key]).then((events) => {
+        this.setState({ events, isLoading: false });
+      });
+    }
   }
 
   render() {
-    const { item } = this.state;
+    const { item, events, isLoading } = this.state;
 
     return (
       <View style={styles.container}>
@@ -78,7 +94,21 @@ class TrackScreen extends React.Component {
             }
           />
 
-          <Button title="Track" onPress={this.handleTrack}></Button>
+          <Button
+            title="Track"
+            disabled={!item.what || !item.amount}
+            onPress={this.handleTrack}
+          />
+        </View>
+
+        <View>
+          <EventList
+            events={events}
+            isLoading={isLoading}
+            renderItem={({ item }) => (
+              <DateListItem item={item.event} />
+            )}
+          />
         </View>
       </View>
     )

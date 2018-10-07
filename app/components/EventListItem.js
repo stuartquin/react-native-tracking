@@ -1,12 +1,7 @@
 import React from 'react';
 import { TouchableOpacity, StyleSheet, View, Text } from 'react-native';
 
-const getFormattedDate = (timestamp) => {
-  const date = timestamp.toDate();
-  const time = date.toTimeString().substring(0, 5);
-
-  return `${date.toDateString()} ${time}`;
-};
+import { getFormattedDate } from '../services/storage';
 
 const EventListItem = ({ item, onPress }) => {
   return (

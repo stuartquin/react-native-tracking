@@ -1,11 +1,9 @@
 import React from 'react';
 import { StyleSheet, ActivityIndicator, FlatList, View } from 'react-native';
 
-import EventListItem from './EventListItem';
-
-const EventList = ({ events, isLoading, onPressItem }) => {
+const EventList = ({ events, isLoading, renderItem }) => {
   const data = events.map((event) => {
-    return { ...event, key: event.what }
+    return { event, key: event.id }
   });
 
   return (
@@ -15,9 +13,7 @@ const EventList = ({ events, isLoading, onPressItem }) => {
       ) : (
         <FlatList
           data={data}
-          renderItem={({item}) => (
-            <EventListItem item={item} onPress={onPressItem} />
-          )}
+          renderItem={renderItem}
         />
       )}
     </View>
